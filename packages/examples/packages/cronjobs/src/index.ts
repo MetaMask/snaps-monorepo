@@ -6,7 +6,8 @@ import { panel, text, heading, MethodNotFoundError } from '@metamask/snaps-sdk';
 
 import type {
   CancelNotificationParams,
-  ScheduleNotificationParams,
+  ScheduleNotificationParamsWithDate,
+  ScheduleNotificationParamsWithDuration,
 } from './types';
 
 /**
@@ -56,9 +57,10 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
 
 /**
  * Handle incoming JSON-RPC requests from the dapp, sent through the
- * `wallet_invokeSnap` method. This handler handles three methods:
+ * `wallet_invokeSnap` method. This handler handles four methods:
  *
- * - `scheduleNotification`: Schedule a notification in the future.
+ * - `scheduleNotificationWithDate`: Schedule a notification in the future with the `date` param.
+ * - `scheduleNotificationWithDuration`: Schedule a notification in the future with the `duration` param.
  * - `cancelNotification`: Cancel a notification.
  * - `getBackgroundEvents`: Get the Snap's background events.
  *
@@ -70,11 +72,22 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
  */
 export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
   switch (request.method) {
-    case 'scheduleNotification':
+    case 'scheduleNotificationWithDate':
       return snap.request({
         method: 'snap_scheduleBackgroundEvent',
         params: {
-          date: (request.params as ScheduleNotificationParams).date,
+          date: (request.params as ScheduleNotificationParamsWithDate).date,
+          request: {
+            method: 'fireNotification',
+          },
+        },
+      });
+    case 'scheduleNotificationWithDuration':
+      return snap.request({
+        method: 'snap_scheduleBackgroundEvent',
+        params: {
+          duration: (request.params as ScheduleNotificationParamsWithDuration)
+            .duration,
           request: {
             method: 'fireNotification',
           },

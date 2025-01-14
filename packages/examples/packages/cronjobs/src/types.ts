@@ -1,10 +1,19 @@
 /**
- * The parameters for calling the `scheduleNotification` JSON-RPC method.
+ * The parameters for calling the `scheduleNotificationWithDate` JSON-RPC method.
  *
  * @property date - The ISO 8601 date of when the notification should be scheduled.
  */
-export type ScheduleNotificationParams = {
+export type ScheduleNotificationParamsWithDate = {
   date: string;
+};
+
+/**
+ * The parameters for calling the `scheduleNotificationWithDuration` JSON-RPC method.
+ *
+ * @property duration - The ISO 8601 duration of when the notification should be scheduled.
+ */
+export type ScheduleNotificationParamsWithDuration = {
+  duration: string;
 };
 
 /**

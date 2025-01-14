@@ -10,40 +10,82 @@ import { CRONJOBS_SNAP_PORT, CRONJOBS_SNAP_ID } from '../constants';
 
 export const ScheduleBackgroundEvent: FunctionComponent = () => {
   const [date, setDate] = useState('');
+  const [duration, setDuration] = useState('');
   const [invokeSnap, { isLoading, data, error }] = useInvokeMutation();
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleDateChange = (event: ChangeEvent<HTMLInputElement>) => {
     setDate(event.target.value);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleDurationChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setDuration(event.target.value);
+  };
+
+  const handleSubmitWithDate = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     invokeSnap({
       snapId: getSnapId(CRONJOBS_SNAP_ID, CRONJOBS_SNAP_PORT),
-      method: 'scheduleNotification',
+      method: 'scheduleNotificationWithDate',
       params: {
         date,
       },
     }).catch(logError);
   };
 
+  const handleSubmitWithDuration = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    invokeSnap({
+      snapId: getSnapId(CRONJOBS_SNAP_ID, CRONJOBS_SNAP_PORT),
+      method: 'scheduleNotificationWithDuration',
+      params: {
+        duration,
+      },
+    }).catch(logError);
+  };
+
   return (
     <>
-      <Form onSubmit={handleSubmit} className="mb-3">
+      <Form onSubmit={handleSubmitWithDate} className="mb-3">
         <Form.Group>
-          <Form.Label>Date (must be in IS8601 format)</Form.Label>
+          <Form.Label>Date (must be in ISO 8601 format)</Form.Label>
           <Form.Control
             type="text"
             placeholder={new Date().toISOString()}
             value={date}
-            onChange={handleChange}
+            onChange={handleDateChange}
             id="backgroundEventDate"
             className="mb-3"
           />
         </Form.Group>
 
-        <Button type="submit" id="scheduleBackgroundEvent" disabled={isLoading}>
-          Schedule background event (notification)
+        <Button
+          type="submit"
+          id="scheduleBackgroundEventWithDate"
+          disabled={isLoading}
+        >
+          Schedule background event with date (notification)
+        </Button>
+      </Form>
+
+      <Form onSubmit={handleSubmitWithDuration} className="mb-3">
+        <Form.Group>
+          <Form.Label>Duration (must be in ISO 8601 format)</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="PT30S"
+            value={duration}
+            onChange={handleDurationChange}
+            id="backgroundEventDuration"
+            className="mb-3"
+          />
+        </Form.Group>
+
+        <Button
+          type="submit"
+          id="scheduleBackgroundEventWithDuration"
+          disabled={isLoading}
+        >
+          Schedule background event with duration (notification)
         </Button>
       </Form>
 
